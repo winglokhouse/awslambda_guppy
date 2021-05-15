@@ -1,0 +1,6 @@
+pandas==1.2.3
+trendet==0.7
+scipy==1.5.2
+boto3
+fsspec==2021.4.0 # to support df.to_csv(s3) in pandas 1.1.0
+s3fs==2021.4.0 # to support df.to_csv(s3) in pandas 1.1.0
