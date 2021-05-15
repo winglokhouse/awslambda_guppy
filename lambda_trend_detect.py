@@ -69,9 +69,15 @@ def trendet_segment(data, col):
         if last_up > last_down:
             selected_trend = up_trend
             last_trend_ind = 1
+            prev_trend = down_trend
+            prev_trend_ind = -1
+            prev_last = prev_trend.dropna().index[-1]
         else:
             selected_trend = down_trend
             last_trend_ind = -1
+            prev_trend = up_trend
+            prev_trend_ind = 1
+            prev_last = prev_trend.dropna().index[-1]
     elif up_response:
         last = last_up
         selected_trend = up_trend
@@ -84,9 +90,17 @@ def trendet_segment(data, col):
     # Determine 'untrend_loc', 'last_trend_loc'
     if last is not None:
         untrend_iloc = data.index.get_loc(last) + 1
-        untrend_loc = data.index[untrend_iloc]
-        last_seg = selected_trend.dropna().unique()[-1]
-        last_trend_loc = data[selected_trend==last_seg].index[0]
+        if untrend_iloc < data.shape[0]:
+        	# there is no untrend data
+        	untrend_loc = data.index[untrend_iloc]
+        	last_seg = selected_trend.dropna().unique()[-1]
+        	last_trend_loc = data[selected_trend==last_seg].index[0]
+        else:
+        	# trend_detect covers the entire data
+        	# 2nd last trend becomes the last trend
+        	untrend_iloc = data.index.get_loc(prev_last) + 1
+        	last_seg = prev_trend.dropna().unique()[-1]
+        	last_trend_loc = data[prev_trend==last_seg].index[0]        	
     else:
         # no up_response and no down response
         last_trend_loc = None
