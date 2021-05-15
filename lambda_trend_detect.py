@@ -99,8 +99,10 @@ def trendet_segment(data, col):
         	# trend_detect covers the entire data
         	# 2nd last trend becomes the last trend
         	untrend_iloc = data.index.get_loc(prev_last) + 1
+        	untrend_loc = data.index[untrend_iloc]
         	last_seg = prev_trend.dropna().unique()[-1]
-        	last_trend_loc = data[prev_trend==last_seg].index[0]        	
+        	last_trend_loc = data[prev_trend==last_seg].index[0]
+        	last_trend_ind = prev_trend_ind
     else:
         # no up_response and no down response
         last_trend_loc = None
