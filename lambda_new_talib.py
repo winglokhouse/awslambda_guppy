@@ -1,5 +1,6 @@
 import pandas as pd
 import scipy.stats as st
+import numpy as np
 
 def ta_chip(high, low, close, volume, window):
     price_dist = (close-(high+low)/2)**2
