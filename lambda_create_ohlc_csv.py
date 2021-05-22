@@ -85,7 +85,7 @@ def ohlc_gen_compute(data, from1):
     #
     data['guppy_LongTermBandWiden'] = False
     #
-    window = 15
+    window = 100
     chipavg = 'CHIP_AVG_{}'.format(window)
     chipscore = 'CHIP_SCORE_{}'.format(window)
     data[chipavg], data[chipscore] = ta_chip(data['High'], data['Low'], data['Close'], data['Volume'], window)
