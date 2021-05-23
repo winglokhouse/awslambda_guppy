@@ -6,6 +6,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import matplotlib.dates as mdates
 import boto3
+from lambda_new_talib import ta_chip
 
 def ohlc_gen_compute(data, from1):
     ### Check to make sure they are even number
@@ -83,6 +84,21 @@ def ohlc_gen_compute(data, from1):
     data.loc[condition, 'guppy_LongTermTrend_simple'] = -1
     #
     data['guppy_LongTermBandWiden'] = False
+    #
+    window = 200
+    chipavg = 'CHIP_AVG_{}'.format(window)
+    chipscore = 'CHIP_SCORE_{}'.format(window)
+    chipema = "EMA{}".format(window)
+    data[chipavg], data[chipscore] = ta_chip(data['High'], data['Low'], data['Close'], data['Volume'], window)
+    data[chipema]=TA.EMA(data["Close"],window)
+    data['CHIP_CRAZY'] = abs(data[chipavg] - data[chipema])
+    #    
+    window = 1000
+    chipavg1 = 'CHIP_AVG_{}'.format(window)
+    chipscore1 = 'CHIP_SCORE_{}'.format(window)
+    data[chipavg1], data[chipscore1] = ta_chip(data['High'], data['Low'], data['Close'], data['Volume'], window)
+    data['CHIP_TREND'] = data[chipavg] - data[chipavg1]
+    #
     guppy_window = 5
     guppy_longterm = data['guppy_LongTermTrend']
     guppy_longterm_up = guppy_longterm.rolling(guppy_window).sum()==(guppy_window*1)
@@ -182,6 +198,8 @@ def send_msg_to_sqs_trenddetect(L1):
     print(L1)
 
 def lambda_handler(event, context):
+    year_span = 6
+    goback = year_span * -1
     if 'Records' in event:
         for msg in event['Records']:
             handle = msg['receiptHandle']
@@ -193,7 +211,7 @@ def lambda_handler(event, context):
             no_yfinance = False
             end_date = datetime.today()
             end_extend = end_date
-            two_year_before = end_extend + relativedelta(years=-2)
+            two_year_before = end_extend + relativedelta(years=goback)
             two_year_before_strft = two_year_before.strftime('%Y-%m-%d')
             data, ohlc_col = ohlc_gen(L1,two_year_before_strft,end_extend,read_allow,no_yfinance)
             #
