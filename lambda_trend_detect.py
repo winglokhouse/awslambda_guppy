@@ -261,6 +261,10 @@ def run_trend_analysis(L1):
 	chip200_trend_ind, chip200_micro_high, chip200_micro_low, _, _ = analyze_each_field(df, 'CHIP_SCORE_200', 'CHIP_SCORE_200', 'CHIP_SCORE_200')
 	print('CHIP200 trend {} CHIP200 micro high {} CHIP200 micro low {}'.format(chip200_trend_ind, chip200_micro_high, chip200_micro_low))
 	#
+	if df['CHIP_AVG_200'].tail(1)[0]>df['Close'].tail(1)[0]:
+		chip_avg_price = 1
+	else:
+		chip_avg_price = -1
 	row_data = {
 	    'stock': L1,
 	    'last_date' : df.index[-1].strftime("%m-%d-%Y"),
@@ -287,7 +291,7 @@ def run_trend_analysis(L1):
 	    'EMA60_last_up': ema60_trend_ind,
 	    'EMA60_micro_high': ema60_micro_high,
 	    'EMA60_micro_low': ema60_micro_low,
-	    'CHIP_AVG_Price': df['CHIP_AVG_200'].tail(1)[0]>df['Close'].tail(1)[0],
+	    'CHIP_AVG_Price': chip_avg_price,
 	    'CHIP200_last_up': chip200_trend_ind,
 	    'CHIP200_micro_high': chip200_micro_high,
 	    'CHIP200_micro_low': chip200_micro_low,
