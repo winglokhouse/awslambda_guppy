@@ -198,6 +198,8 @@ def send_msg_to_sqs_trenddetect(L1):
     print(L1)
 
 def lambda_handler(event, context):
+    year_span = 6
+    goback = year_span * -1
     if 'Records' in event:
         for msg in event['Records']:
             handle = msg['receiptHandle']
@@ -209,7 +211,7 @@ def lambda_handler(event, context):
             no_yfinance = False
             end_date = datetime.today()
             end_extend = end_date
-            two_year_before = end_extend + relativedelta(years=-4)
+            two_year_before = end_extend + relativedelta(years=goback)
             two_year_before_strft = two_year_before.strftime('%Y-%m-%d')
             data, ohlc_col = ohlc_gen(L1,two_year_before_strft,end_extend,read_allow,no_yfinance)
             #
