@@ -209,7 +209,7 @@ def lambda_handler(event, context):
             no_yfinance = False
             end_date = datetime.today()
             end_extend = end_date
-            two_year_before = end_extend + relativedelta(years=-2)
+            two_year_before = end_extend + relativedelta(years=-4)
             two_year_before_strft = two_year_before.strftime('%Y-%m-%d')
             data, ohlc_col = ohlc_gen(L1,two_year_before_strft,end_extend,read_allow,no_yfinance)
             #
