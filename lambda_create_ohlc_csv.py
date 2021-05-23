@@ -85,10 +85,19 @@ def ohlc_gen_compute(data, from1):
     #
     data['guppy_LongTermBandWiden'] = False
     #
-    window = 100
+    window = 200
     chipavg = 'CHIP_AVG_{}'.format(window)
     chipscore = 'CHIP_SCORE_{}'.format(window)
+    chipema = "EMA{}".format(window)
     data[chipavg], data[chipscore] = ta_chip(data['High'], data['Low'], data['Close'], data['Volume'], window)
+    data[chipema]=TA.EMA(data["Close"],window)
+    data['CHIP_CRAZY'] = abs(data[chipavg] - data[chipema])
+    #    
+    window = 1000
+    chipavg1 = 'CHIP_AVG_{}'.format(window)
+    chipscore1 = 'CHIP_SCORE_{}'.format(window)
+    data[chipavg1], data[chipscore1] = ta_chip(data['High'], data['Low'], data['Close'], data['Volume'], window)
+    data['CHIP_TREND'] = data[chipavg] - data[chipavg1]
     #
     guppy_window = 5
     guppy_longterm = data['guppy_LongTermTrend']
