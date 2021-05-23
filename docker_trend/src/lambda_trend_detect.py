@@ -257,8 +257,14 @@ def run_trend_analysis(L1):
 	ema30_trend_ind, ema30_micro_high, ema30_micro_low, _, _ = analyze_each_field(df, 'EMA30', 'EMA30', 'EMA30')
 	print('EMA30 trend {} EMA30 micro high {} EMA30 micro low {}'.format(ema30_trend_ind, ema30_micro_high, ema30_micro_low))
 	ema60_trend_ind, ema60_micro_high, ema60_micro_low, _, _ = analyze_each_field(df, 'EMA60', 'EMA60', 'EMA60')
-	print('EMA60 trend {} EMA60 micro high {} EMA60 micro low {}'.format(ema60_trend_ind, ema60_micro_high, ema60_micro_low))	
+	print('EMA60 trend {} EMA60 micro high {} EMA60 micro low {}'.format(ema60_trend_ind, ema60_micro_high, ema60_micro_low))
+	chip200_trend_ind, chip200_micro_high, chip200_micro_low, _, _ = analyze_each_field(df, 'CHIP_SCORE_200', 'CHIP_SCORE_200', 'CHIP_SCORE_200')
+	print('CHIP200 trend {} CHIP200 micro high {} CHIP200 micro low {}'.format(chip200_trend_ind, chip200_micro_high, chip200_micro_low))
 	#
+	if df['CHIP_AVG_200'].tail(1)[0]>df['Close'].tail(1)[0]:
+		chip_avg_price = 1
+	else:
+		chip_avg_price = -1
 	row_data = {
 	    'stock': L1,
 	    'last_date' : df.index[-1].strftime("%m-%d-%Y"),
@@ -284,7 +290,11 @@ def run_trend_analysis(L1):
 	    'EMA30_micro_low': ema30_micro_low,
 	    'EMA60_last_up': ema60_trend_ind,
 	    'EMA60_micro_high': ema60_micro_high,
-	    'EMA60_micro_low': ema60_micro_low
+	    'EMA60_micro_low': ema60_micro_low,
+	    'CHIP_AVG_Price': chip_avg_price,
+	    'CHIP200_last_up': chip200_trend_ind,
+	    'CHIP200_micro_high': chip200_micro_high,
+	    'CHIP200_micro_low': chip200_micro_low,
 	    }
 	guppy_col = [x for x in df.columns if 'guppy' in x]
 	for col in guppy_col:
@@ -310,7 +320,7 @@ def lambda_handler(event, handler):
 event = {'Records': [
             {'messageId': '67df3bef-db40-4efd-8ab3-9a91ac2a8bef',
             'receiptHandle': 'AQICb/KtCVgWXxCZhbDcNki/rtsKyag6EE2gA08aer0eAknp3ceEsiW9hQKxQHuIWps8VPiqmR5+A7xlOo+3etrXGJZ4x1dcIQRYXyeoHq/sdlvw1K4AoAGGEVwAgMjBb3+WR6N3yrDTt4OCOc4lO7SuUyTe1IoFiiSsSzp9T4xUIWmH3FmLDK2QmIdzi8t7GFqbSZ9m46WkunBmSDiAxkc+NMBseygCWcW3a5+SoSYk5hfJsvASzyU5WQBu3hrEubu77sCVALO9vKWvSC4uKp5cThzdSVDXyggf4H3Z8rT8WweSkTFtxiqwRWFkBnqbdS2l3EsNXte6QkKFe1tWmxe3krdi+L6RLCfKrtgMcgRSWqHvq5t8ro8e03Kn3qFJt5wUsm2K6HqeWIN1gwfmyHqLCg==', 
-            'body': '0700.HK',
+            'body': '0656.HK',
             'attributes': {
                 'ApproximateReceiveCount': '1',
                 'SentTimestamp': '1619413269680',
