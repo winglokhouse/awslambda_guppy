@@ -10,4 +10,4 @@ COPY requirements-trend-detect.txt .
 RUN pip install -r requirements-trend-detect.txt
 
 COPY src/ .	
-CMD ["lambda_trend_detect.lambda_handler"]
+CMD ["lambda_trend_detect_rewrite.lambda_handler"]
