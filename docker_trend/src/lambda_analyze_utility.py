@@ -89,18 +89,18 @@ def trendet_segment(data, col):
     if last is not None:
         untrend_iloc = data.index.get_loc(last) + 1
         if untrend_iloc < data.shape[0]:
-        	# there is no untrend data
-        	untrend_loc = data.index[untrend_iloc]
-        	last_seg = selected_trend.dropna().unique()[-1]
-        	last_trend_loc = data[selected_trend==last_seg].index[0]
+            # there is no untrend data
+            untrend_loc = data.index[untrend_iloc]
+            last_seg = selected_trend.dropna().unique()[-1]
+            last_trend_loc = data[selected_trend==last_seg].index[0]
         else:
-        	# trend_detect covers the entire data
-        	# 2nd last trend becomes the last trend
-        	untrend_iloc = data.index.get_loc(prev_last) + 1
-        	untrend_loc = data.index[untrend_iloc]
-        	last_seg = prev_trend.dropna().unique()[-1]
-        	last_trend_loc = data[prev_trend==last_seg].index[0]
-        	last_trend_ind = prev_trend_ind
+            # trend_detect covers the entire data
+            # 2nd last trend becomes the last trend
+            untrend_iloc = data.index.get_loc(prev_last) + 1
+            untrend_loc = data.index[untrend_iloc]
+            last_seg = prev_trend.dropna().unique()[-1]
+            last_trend_loc = data[prev_trend==last_seg].index[0]
+            last_trend_ind = prev_trend_ind
     else:
         # no up_response and no down response
         last_trend_loc = None
@@ -207,10 +207,10 @@ def micro_trend_price_action(ohlc, high_peak, low_trough, high_col, low_col):
     return micro_trend_high, micro_trend_low
 #
 def analyze_each_field(df, close_col, high_col, low_col):
-	untrend_loc, last_trend_loc, last_trend_ind = trendet_segment(df, close_col)
-	ohlc, high_peak, low_trough = peak_trough_untrend(df, last_trend_loc, untrend_loc, high_col, low_col)
-	micro_trend_high, micro_trend_low = micro_trend_price_action(ohlc, high_peak, low_trough, high_col, low_col)
-	return last_trend_ind, micro_trend_high, micro_trend_low, last_trend_loc, untrend_loc
+    untrend_loc, last_trend_loc, last_trend_ind = trendet_segment(df, close_col)
+    ohlc, high_peak, low_trough = peak_trough_untrend(df, last_trend_loc, untrend_loc, high_col, low_col)
+    micro_trend_high, micro_trend_low = micro_trend_price_action(ohlc, high_peak, low_trough, high_col, low_col)
+    return last_trend_ind, micro_trend_high, micro_trend_low, last_trend_loc, untrend_loc
 
 def true_false_to_pos_neg(x):
     if x:
@@ -219,102 +219,108 @@ def true_false_to_pos_neg(x):
         return -1
 
 def run_trend_analysis(L1, df, display):
-	# Augment df
-	df['guppy_3over30'] = df['EMA3']>df['EMA30']
-	df['guppy_15over30'] = df['EMA15']>df['EMA30']
-	#
-	price_trend_ind, price_micro_high, price_micro_low, _, _ = analyze_each_field(df, 'Close', 'High', 'Low')
-	if display:
-		print('price trend {} price micro high {} price micro low {}'.format(price_trend_ind, price_micro_high, price_micro_low))
-	mfi_trend_ind, mfi_micro_high, mfi_micro_low, _, _ = analyze_each_field(df, 'MFI', 'MFI', 'MFI')
-	if display:
-		print('mfi trend {} mfi micro high {} mfi micro low {}'.format(mfi_trend_ind, mfi_micro_high, mfi_micro_low))
-	gwidth_trend_ind, gwidth_micro_high, gwidth_micro_low, last_trend_loc, untrend_loc = analyze_each_field(df, 'guppy_long_width', 'guppy_long_width', 'guppy_long_width')
-	if display:
-		print('guppy-width trend {} guppy-width micro high {} guppy-width micro low {}'.format(gwidth_trend_ind, gwidth_micro_high, gwidth_micro_low))
-	#
-	# compute EMA30 > EMA60 between last_trend_loc and last_trend_last_day_loc
-	last_trend_last_day_iloc = df.index.get_loc(untrend_loc) - 1
-	last_trend_last_day_loc = df.index[last_trend_last_day_iloc]
-	if display:
-		print('first day {} last day {} untrend first day {}'.format(last_trend_loc, last_trend_last_day_loc, untrend_loc))
-	last_trend_30over60_sum = df.loc[last_trend_loc:last_trend_last_day_loc ,'guppy_30over60'].apply(true_false_to_pos_neg).sum()
-	if last_trend_30over60_sum > 0:
-		guppy_30over60_last_ind = 1
-	elif last_trend_30over60_sum < 0:
-		guppy_30over60_last_ind = -1
-	else:
-		guppy_30over60_last_ind = 0
-	#
-	ema3_trend_ind, ema3_micro_high, ema3_micro_low, _, _ = analyze_each_field(df, 'EMA3', 'EMA3', 'EMA3')
-	if display:
-		print('EMA3 trend {} EMA3 micro high {} EMA3 micro low {}'.format(ema3_trend_ind, ema3_micro_high, ema3_micro_low))
-	ema15_trend_ind, ema15_micro_high, ema15_micro_low, _, _ = analyze_each_field(df, 'EMA15', 'EMA15', 'EMA15')
-	if display:
-		print('EMA15 trend {} EMA15 micro high {} EMA15 micro low {}'.format(ema15_trend_ind, ema15_micro_high, ema15_micro_low))
-	ema30_trend_ind, ema30_micro_high, ema30_micro_low, _, _ = analyze_each_field(df, 'EMA30', 'EMA30', 'EMA30')
-	if display:
-		print('EMA30 trend {} EMA30 micro high {} EMA30 micro low {}'.format(ema30_trend_ind, ema30_micro_high, ema30_micro_low))
-	ema60_trend_ind, ema60_micro_high, ema60_micro_low, _, _ = analyze_each_field(df, 'EMA60', 'EMA60', 'EMA60')
-	if display:
-		print('EMA60 trend {} EMA60 micro high {} EMA60 micro low {}'.format(ema60_trend_ind, ema60_micro_high, ema60_micro_low))
-	chip200_trend_ind, chip200_micro_high, chip200_micro_low, _, _ = analyze_each_field(df, 'CHIP_SCORE_200', 'CHIP_SCORE_200', 'CHIP_SCORE_200')
-	if display:
-		print('CHIP200 trend {} CHIP200 micro high {} CHIP200 micro low {}'.format(chip200_trend_ind, chip200_micro_high, chip200_micro_low))
-	adx_trend_ind, adx_micro_high, adx_micro_low, _, _ = analyze_each_field(df, 'ADX', 'ADX', 'ADX')
-	if display:
-		print('ADX trend {} ADX micro high {} ADX micro low {}'.format(adx_trend_ind, adx_micro_high, adx_micro_low))	
-	#
-	if df['CHIP_AVG_200'].tail(1)[0]>df['Close'].tail(1)[0]:
-		chip_avg_price = 1
-	else:
-		chip_avg_price = -1
-	last_date = df.index[-1].strftime("%m-%d-%Y")
-	print(last_date)
-	row_data = {
-	    'stock': L1,
-	    'last_date' : last_date,
-	    'price_last_up': price_trend_ind,
-	    'price_micro_high': price_micro_high,
-	    'price_micro_low': price_micro_low,
-	    'mfi_last_up': mfi_trend_ind,
-	    'mfi_micro_high': mfi_micro_high, 
-	    'mfi_micro_low': mfi_micro_low,
-	    'guppy_30over60_last_ind': guppy_30over60_last_ind,
-	    'guppy-width_last_up': gwidth_trend_ind,
-	    'guppy-width_micro_high': gwidth_micro_high, 
-	    'guppy-width_micro_low': gwidth_micro_low,
-	    'guppy-width_untrend_firstday': untrend_loc.strftime("%m-%d-%Y"),
-	    'EMA3_last_up': ema3_trend_ind,
-	    'EMA3_micro_high': ema3_micro_high,
-	    'EMA3_micro_low': ema3_micro_low,
-	    'EMA15_last_up': ema15_trend_ind,
-	    'EMA15_micro_high': ema15_micro_high,
-	    'EMA15_micro_low': ema15_micro_low,
-	    'EMA30_last_up': ema30_trend_ind,
-	    'EMA30_micro_high': ema30_micro_high,
-	    'EMA30_micro_low': ema30_micro_low,
-	    'EMA60_last_up': ema60_trend_ind,
-	    'EMA60_micro_high': ema60_micro_high,
-	    'EMA60_micro_low': ema60_micro_low,
-	    'CHIP_AVG_Price': chip_avg_price,
-	    'CHIP200_last_up': chip200_trend_ind,
-	    'CHIP200_micro_high': chip200_micro_high,
-	    'CHIP200_micro_low': chip200_micro_low,
-	    'ADX_last_up': adx_trend_ind,
-	    'ADX_micro_high': adx_micro_high,
-	    'ADX_micro_low': adx_micro_low,	    
-	    }
-	guppy_col = [x for x in df.columns if 'guppy' in x]
-	for col in guppy_col:
-	    # print(df[col].dtypes)
-	    if df[col].dtypes == 'float64':
-	        row_data[col] = Decimal(str(df.tail(1)[col].values[0]))
-	    elif df[col].dtypes == 'bool':
-	        row_data[col] = (df.tail(1)[col].values[0] * 1).item()
-	    elif df[col].dtypes == 'int64':
-	        row_data[col] = df.tail(1)[col].values[0].item()
-	    else:
-	        row_data[col] = df.tail(1)[col].values[0]
-	#
-	return row_data
+    # Augment df
+    df['guppy_3over30'] = df['EMA3']>df['EMA30']
+    df['guppy_15over30'] = df['EMA15']>df['EMA30']
+    #
+    price_trend_ind, price_micro_high, price_micro_low, _, _ = analyze_each_field(df, 'Close', 'High', 'Low')
+    if display:
+        print('price trend {} price micro high {} price micro low {}'.format(price_trend_ind, price_micro_high, price_micro_low))
+    mfi_trend_ind, mfi_micro_high, mfi_micro_low, _, _ = analyze_each_field(df, 'MFI', 'MFI', 'MFI')
+    if display:
+        print('mfi trend {} mfi micro high {} mfi micro low {}'.format(mfi_trend_ind, mfi_micro_high, mfi_micro_low))
+    gwidth_trend_ind, gwidth_micro_high, gwidth_micro_low, last_trend_loc, untrend_loc = analyze_each_field(df, 'guppy_long_width', 'guppy_long_width', 'guppy_long_width')
+    if display:
+        print('guppy-width trend {} guppy-width micro high {} guppy-width micro low {}'.format(gwidth_trend_ind, gwidth_micro_high, gwidth_micro_low))
+    #
+    # compute EMA30 > EMA60 between last_trend_loc and last_trend_last_day_loc
+    last_trend_last_day_iloc = df.index.get_loc(untrend_loc) - 1
+    last_trend_last_day_loc = df.index[last_trend_last_day_iloc]
+    if display:
+        print('first day {} last day {} untrend first day {}'.format(last_trend_loc, last_trend_last_day_loc, untrend_loc))
+    last_trend_30over60_sum = df.loc[last_trend_loc:last_trend_last_day_loc ,'guppy_30over60'].apply(true_false_to_pos_neg).sum()
+    if last_trend_30over60_sum > 0:
+        guppy_30over60_last_ind = 1
+    elif last_trend_30over60_sum < 0:
+        guppy_30over60_last_ind = -1
+    else:
+        guppy_30over60_last_ind = 0
+    #
+    ema3_trend_ind, ema3_micro_high, ema3_micro_low, _, _ = analyze_each_field(df, 'EMA3', 'EMA3', 'EMA3')
+    if display:
+        print('EMA3 trend {} EMA3 micro high {} EMA3 micro low {}'.format(ema3_trend_ind, ema3_micro_high, ema3_micro_low))
+    ema15_trend_ind, ema15_micro_high, ema15_micro_low, _, _ = analyze_each_field(df, 'EMA15', 'EMA15', 'EMA15')
+    if display:
+        print('EMA15 trend {} EMA15 micro high {} EMA15 micro low {}'.format(ema15_trend_ind, ema15_micro_high, ema15_micro_low))
+    ema30_trend_ind, ema30_micro_high, ema30_micro_low, _, _ = analyze_each_field(df, 'EMA30', 'EMA30', 'EMA30')
+    if display:
+        print('EMA30 trend {} EMA30 micro high {} EMA30 micro low {}'.format(ema30_trend_ind, ema30_micro_high, ema30_micro_low))
+    ema60_trend_ind, ema60_micro_high, ema60_micro_low, _, _ = analyze_each_field(df, 'EMA60', 'EMA60', 'EMA60')
+    if display:
+        print('EMA60 trend {} EMA60 micro high {} EMA60 micro low {}'.format(ema60_trend_ind, ema60_micro_high, ema60_micro_low))
+    chip200_trend_ind, chip200_micro_high, chip200_micro_low, _, _ = analyze_each_field(df, 'CHIP_SCORE_200', 'CHIP_SCORE_200', 'CHIP_SCORE_200')
+    if display:
+        print('CHIP200 trend {} CHIP200 micro high {} CHIP200 micro low {}'.format(chip200_trend_ind, chip200_micro_high, chip200_micro_low))
+    chipavg_trend_ind, chipavg_micro_high, chipavg_micro_low, _, _ = analyze_each_field(df, 'CHIP_AVG_200', 'CHIP_AVG_200', 'CHIP_AVG_200')
+    if display:
+        print('CHIP_AVG trend {} CHIP_AVG micro high {} CHIP_AVG micro low {}'.format(chipavg_trend_ind, chipavg_micro_high, chipavg_micro_low))
+    adx_trend_ind, adx_micro_high, adx_micro_low, _, _ = analyze_each_field(df, 'ADX', 'ADX', 'ADX')
+    if display:
+        print('ADX trend {} ADX micro high {} ADX micro low {}'.format(adx_trend_ind, adx_micro_high, adx_micro_low))   
+    #
+    if df['CHIP_AVG_200'].tail(1)[0]>df['Close'].tail(1)[0]:
+        chip_avg_price = 1
+    else:
+        chip_avg_price = -1
+    last_date = df.index[-1].strftime("%m-%d-%Y")
+    # print(last_date)
+    row_data = {
+        'stock': L1,
+        'last_date' : last_date,
+        'price_last_up': price_trend_ind,
+        'price_micro_high': price_micro_high,
+        'price_micro_low': price_micro_low,
+        'mfi_last_up': mfi_trend_ind,
+        'mfi_micro_high': mfi_micro_high, 
+        'mfi_micro_low': mfi_micro_low,
+        'guppy_30over60_last_ind': guppy_30over60_last_ind,
+        'guppy-width_last_up': gwidth_trend_ind,
+        'guppy-width_micro_high': gwidth_micro_high, 
+        'guppy-width_micro_low': gwidth_micro_low,
+        'guppy-width_untrend_firstday': untrend_loc.strftime("%m-%d-%Y"),
+        'EMA3_last_up': ema3_trend_ind,
+        'EMA3_micro_high': ema3_micro_high,
+        'EMA3_micro_low': ema3_micro_low,
+        'EMA15_last_up': ema15_trend_ind,
+        'EMA15_micro_high': ema15_micro_high,
+        'EMA15_micro_low': ema15_micro_low,
+        'EMA30_last_up': ema30_trend_ind,
+        'EMA30_micro_high': ema30_micro_high,
+        'EMA30_micro_low': ema30_micro_low,
+        'EMA60_last_up': ema60_trend_ind,
+        'EMA60_micro_high': ema60_micro_high,
+        'EMA60_micro_low': ema60_micro_low,
+        'CHIP_AVG_Price': chip_avg_price,
+        'CHIP200_last_up': chip200_trend_ind,
+        'CHIP200_micro_high': chip200_micro_high,
+        'CHIP200_micro_low': chip200_micro_low,
+        'CHIPAVG_last_up': chipavg_trend_ind,
+        'CHIPAVG_micro_high': chipavg_micro_high,
+        'CHIPAVG_micro_low': chipavg_micro_low,
+        'ADX_last_up': adx_trend_ind,
+        'ADX_micro_high': adx_micro_high,
+        'ADX_micro_low': adx_micro_low,     
+        }
+    guppy_col = [x for x in df.columns if 'guppy' in x]
+    for col in guppy_col:
+        # print(df[col].dtypes)
+        if df[col].dtypes == 'float64':
+            row_data[col] = Decimal(str(df.tail(1)[col].values[0]))
+        elif df[col].dtypes == 'bool':
+            row_data[col] = (df.tail(1)[col].values[0] * 1).item()
+        elif df[col].dtypes == 'int64':
+            row_data[col] = df.tail(1)[col].values[0].item()
+        else:
+            row_data[col] = df.tail(1)[col].values[0]
+    #
+    return row_data
