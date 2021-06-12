@@ -261,6 +261,9 @@ def run_trend_analysis(L1, df, display):
 	chip200_trend_ind, chip200_micro_high, chip200_micro_low, _, _ = analyze_each_field(df, 'CHIP_SCORE_200', 'CHIP_SCORE_200', 'CHIP_SCORE_200')
 	if display:
 		print('CHIP200 trend {} CHIP200 micro high {} CHIP200 micro low {}'.format(chip200_trend_ind, chip200_micro_high, chip200_micro_low))
+    chipavg_trend_ind, chipavg_micro_high, chipavg_micro_low, _, _ = analyze_each_field(df, 'CHIP_AVG_200', 'CHIP_AVG_200', 'CHIP_AVG_200')
+    if display:
+        print('CHIP_AVG trend {} CHIP_AVG micro high {} CHIP_AVG micro low {}'.format(chipavg_trend_ind, chipavg_micro_high, chipavg_micro_low))
 	adx_trend_ind, adx_micro_high, adx_micro_low, _, _ = analyze_each_field(df, 'ADX', 'ADX', 'ADX')
 	if display:
 		print('ADX trend {} ADX micro high {} ADX micro low {}'.format(adx_trend_ind, adx_micro_high, adx_micro_low))	
@@ -270,7 +273,7 @@ def run_trend_analysis(L1, df, display):
 	else:
 		chip_avg_price = -1
 	last_date = df.index[-1].strftime("%m-%d-%Y")
-	print(last_date)
+	# print(last_date)
 	row_data = {
 	    'stock': L1,
 	    'last_date' : last_date,
@@ -301,6 +304,9 @@ def run_trend_analysis(L1, df, display):
 	    'CHIP200_last_up': chip200_trend_ind,
 	    'CHIP200_micro_high': chip200_micro_high,
 	    'CHIP200_micro_low': chip200_micro_low,
+        'CHIPAVG_last_up': chipavg_trend_ind,
+        'CHIPAVG_micro_high': chipavg_micro_high,
+        'CHIPAVG_micro_low': chipavg_micro_low,
 	    'ADX_last_up': adx_trend_ind,
 	    'ADX_micro_high': adx_micro_high,
 	    'ADX_micro_low': adx_micro_low,	    
