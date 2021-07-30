@@ -24,8 +24,8 @@ RUN yum update -y && \
 # shell command : WARNING: You are using pip version 20.1.1; however, version 21.0.1 is available
 RUN /var/lang/bin/python3.7 -m pip install --upgrade pip
 # copy from this linux machine to container
-COPY requirements-lambda.txt .
 RUN pip install yfinance --upgrade --no-cache-dir
+COPY requirements-lambda-yfissue.txt .
 RUN pip install -r requirements-lambda-yfissue.txt
 
 COPY src/ .	
