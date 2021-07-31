@@ -244,4 +244,3 @@ event = {'Records': [
             ]
         }
 lambda_handler(event, None)
-'''
