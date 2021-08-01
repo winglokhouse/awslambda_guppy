@@ -7,6 +7,7 @@ from dateutil.relativedelta import relativedelta
 import matplotlib.dates as mdates
 import boto3
 from lambda_new_talib import ta_chip
+from io import StringIO
 
 def ohlc_gen_compute(data, from1):
     ### Check to make sure they are even number
@@ -181,12 +182,18 @@ def ohlc_gen(stock_code,from1,end,read_allow,no_yfinance):
         ohlc_col = ohlc_col + ohlc_rest
         return  data, ohlc_col
 
-def upload_to_s3(data_csv):
+def upload_to_s3(data, data_csv):
     s3 = boto3.client('s3')
     bucket = 'autoguppy'
-    local_file = data_csv
+    # local_file = data_csv
     key = 'daily/{}'.format(data_csv)
-    s3.upload_file(Filename=local_file, Bucket=bucket, Key=key)
+    # s3.upload_file(Filename=local_file, Bucket=bucket, Key=key)
+    #
+    csv_buf = StringIO()
+    data.to_csv(csv_buf, header=True, index=False)
+    csv_buf.seek(0)
+    s3.put_object(Bucket=bucket, Body=csv_buf.getvalue(), Key=key)
+
 
 def send_msg_to_sqs_trenddetect(L1):
     client = boto3.client('sqs')
@@ -221,7 +228,7 @@ def lambda_handler(event, context):
                 data_csv = '{}.csv'.format(L1[:4])
                 s3_path = 's3://{}/{}/{}'.format(bucket, s3_folder, data_csv)
                 # data.to_csv(s3_path)
-                upload_to_s3(data_csv)
+                upload_to_s3(data, data_csv)
                 send_msg_to_sqs_trenddetect(L1)
     return None
 
