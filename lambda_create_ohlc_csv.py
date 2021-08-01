@@ -220,8 +220,8 @@ def lambda_handler(event, context):
                 s3_folder = 'daily'
                 data_csv = '{}.csv'.format(L1[:4])
                 s3_path = 's3://{}/{}/{}'.format(bucket, s3_folder, data_csv)
-                data.to_csv(s3_path)
-                # upload_to_s3(data_csv)
+                # data.to_csv(s3_path)
+                upload_to_s3(data_csv)
                 send_msg_to_sqs_trenddetect(L1)
     return None
 
