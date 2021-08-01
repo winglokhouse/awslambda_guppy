@@ -1,5 +1,5 @@
 #
-# 2021/8/1 - Avoid using to_csv for S3
+# 2021/8/1 - Avoid using to_csv for S3. Make sure to_csv(Index=True)
 #
 
 import yfinance as yf
@@ -194,7 +194,7 @@ def upload_to_s3(data, data_csv):
     # s3.upload_file(Filename=local_file, Bucket=bucket, Key=key)
     #
     csv_buf = StringIO()
-    data.to_csv(csv_buf, header=True, index=False)
+    data.to_csv(csv_buf, header=True, index=True)
     csv_buf.seek(0)
     s3.put_object(Bucket=bucket, Body=csv_buf.getvalue(), Key=key)
 
