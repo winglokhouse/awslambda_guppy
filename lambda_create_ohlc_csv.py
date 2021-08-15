@@ -1,3 +1,7 @@
+#
+# 2021/8/1 - Avoid using to_csv for S3. Make sure to_csv(Index=True)
+#
+
 import yfinance as yf
 import pandas as pd
 import numpy as np
@@ -8,6 +12,14 @@ import matplotlib.dates as mdates
 import boto3
 from lambda_new_talib import ta_chip
 from io import StringIO
+
+def pos_neg(x):
+    if x > 0:
+        return 1
+    elif x < 0:
+        return -1
+    else:
+        return 0
 
 def ohlc_gen_compute(data, from1):
     ### Check to make sure they are even number
@@ -147,6 +159,10 @@ def ohlc_gen_compute(data, from1):
     data["chaikin19"]=TA.EMA(data["chaikin"],19)
     data["chaikin50"]=TA.EMA(data["chaikin"],50)
     #
+    price_diff = (data['Close']-data['CHIP_AVG_200']).apply(pos_neg)
+    data['Price_CHIP200_10'] = price_diff.rolling(window=10).sum()
+    data['guppy_LT_last5'] = data['guppy_LongTermTrend'].rolling(window=5).sum()
+    #
     data_weekly["EMA9"]=TA.EMA(data_weekly["Close"],9)
     data_weekly["EMA19"]=TA.EMA(data_weekly["Close"],19)
     data_weekly["EMA50"]=TA.EMA(data_weekly["Close"],50)
@@ -190,7 +206,7 @@ def upload_to_s3(data, data_csv):
     # s3.upload_file(Filename=local_file, Bucket=bucket, Key=key)
     #
     csv_buf = StringIO()
-    data.to_csv(csv_buf, header=True, index=False)
+    data.to_csv(csv_buf, header=True, index=True)
     csv_buf.seek(0)
     s3.put_object(Bucket=bucket, Body=csv_buf.getvalue(), Key=key)
 
