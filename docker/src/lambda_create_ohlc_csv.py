@@ -13,6 +13,14 @@ import boto3
 from lambda_new_talib import ta_chip
 from io import StringIO
 
+def pos_neg(x):
+    if x > 0:
+        return 1
+    elif x < 0:
+        return -1
+    else:
+        return 0
+
 def ohlc_gen_compute(data, from1):
     ### Check to make sure they are even number
     if (data.shape[0] % 2) == 1:
@@ -150,6 +158,10 @@ def ohlc_gen_compute(data, from1):
     data["chaikin9"]=TA.EMA(data["chaikin"],9)
     data["chaikin19"]=TA.EMA(data["chaikin"],19)
     data["chaikin50"]=TA.EMA(data["chaikin"],50)
+    #
+    price_diff = (data['Close']-data['CHIP_AVG_200']).apply(pos_neg)
+    data['Price_CHIP200_10'] = price_diff.rolling(window=10).sum()
+    data['guppy_LT_last5'] = data['guppy_LongTermTrend'].rolling(window=5).sum()
     #
     data_weekly["EMA9"]=TA.EMA(data_weekly["Close"],9)
     data_weekly["EMA19"]=TA.EMA(data_weekly["Close"],19)
