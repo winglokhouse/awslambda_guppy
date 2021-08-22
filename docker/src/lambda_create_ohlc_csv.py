@@ -93,8 +93,7 @@ def ohlc_gen_compute(data, from1):
                 (data['EMA8']<data['EMA10']) &\
                 (data['EMA10']<data['EMA12']) &\
                 (data['EMA12']<data['EMA15'])
-    data.loc[condition, 'guppy_ShortTermTrend'] = -1
-    condition = (data['EMA3'] < data[ST_ema].min(axis=1))  & data['EMA3'].notna() & data['EMA15'].notna()
+    # condition = (data['EMA3'] < data[ST_ema].min(axis=1))  & data['EMA3'].notna() & data['EMA15'].notna()
     data.loc[condition, 'guppy_ShortTermTrend'] = -1
     data['guppy_LongTermTrend'] = 0
     # condition = (data['EMA30'] > data[LT_ema].max(axis=1))  & data['EMA30'].notna() & data['EMA60'].notna()
@@ -109,8 +108,7 @@ def ohlc_gen_compute(data, from1):
                 (data['EMA40']<data['EMA45']) &\
                 (data['EMA45']<data['EMA50']) &\
                 (data['EMA50']<data['EMA60'])
-    data.loc[condition, 'guppy_LongTermTrend'] = -1
-    condition = (data['EMA30'] < data[LT_ema].min(axis=1)) & data['EMA30'].notna() & data['EMA60'].notna()
+    # condition = (data['EMA30'] < data[LT_ema].min(axis=1)) & data['EMA30'].notna() & data['EMA60'].notna()
     data.loc[condition, 'guppy_LongTermTrend'] = -1
     data['guppy_LongTermTrend_simple'] = 0
     condition = (data['EMA30'] > data['EMA60'])  & data['EMA30'].notna() & data['EMA60'].notna()
