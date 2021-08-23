@@ -181,6 +181,7 @@ def ohlc_gen_compute(data, from1):
     #
     price_diff = (data['Close']-data['CHIP_AVG_200']).apply(pos_neg)
     data['Price_CHIP200_10'] = price_diff.rolling(window=10).sum()
+    data['Price_CHIP200_20'] = price_diff.rolling(window=20).sum()
     data['guppy_LT_last5'] = data['guppy_LongTermTrend'].rolling(window=5).sum()
     #
     data_weekly["EMA9"]=TA.EMA(data_weekly["Close"],9)
